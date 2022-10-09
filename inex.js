@@ -135,7 +135,8 @@ inquirer.prompt([{
             name: "role",
             message: ["What is the employee's role? "],
             choices: async function () {
-              const results = await queryPromise("select department.name AS value, department.* AS name from department");
+              const results = await queryPromise(
+                "select department.name AS value, department.* AS name from department");
             }
           }])
           .then(function (role_id) {
@@ -212,12 +213,109 @@ const promptUser = async () => {
 
 
 
+//DO SHIT
+
+//ASK THE USERS STUFFS
+
+console.log("pp3")
+const addEmployees = async () => {
+  const response = await inquirer.prompt([{
+      type: "input",
+      name: "firstName",
+      message: ["What is the employee's first name? "]
+    }, {
+      type: "input",
+      name: "Middle",
+      message: ["What is the employee's middle name? "]
+    }, {
+      type: "input",
+      name: "lastName",
+      message: ["What is the employee's Last name? "]
+    },
+
+    ////////get data n set as options
+    {
+      name: "role",
+      type: "list",
+      message: ["What is the employee's role? "],
+      choices: async function (answers) {
+        const results = await queryPromise(
+          "select rolee.title AS name, rolee.id AS value from rolee"
+        );
+        console.log("pp2")
+        return results;
+      }
+    },
+    {
+      type: "list",
+      name: "manger",
+      message: ["Who is the manager of this employee? "],
+      choices: async function (answers) {
+        const results = await queryPromise(
+          "select department.name AS name, department.id AS value from department WHERE name LIKE ?",
+          `%${answers}%`
+        );
+        return results;
+      }
+    }
+  ])
+}
+console.log("pp2")
 
 
 
 
 
 
+./valheim_server.x86_64 
+-nographics 
+-batchmode 
+-name "${SERVER_NAME}" 
+-port ${SERVER_PORT} 
+-world "${WORLD}" 
+-password "${PASSWORD}" 
+-public ${PUBLIC} 
+> >(sed -uE "${FILTER}")
+
+export templdpath=$LD_LIBRARY_PATH;
+ export DOORSTOP_ENABLE=TRUE;
+ export DOORSTOP_INVOKE_DLL_PATH=./BepInEx/core/BepInEx.Preloader.dll;
+ export DOORSTOP_CORLIB_OVERRIDE_PATH=./unstripped_corlib;
+ export LD_LIBRARY_PATH=./doorstop_libs:$LD_LIBRARY_PATH;
+ export LD_PRELOAD=libdoorstop_x64.so:$LD_PRELOAD;
+ export LD_LIBRARY_PATH=./linux64:$LD_LIBRARY_PATH;
+ export SteamAppId=892970;
+
+ ./valheim_server.x86_64 
+ -nographics 
+ -batchmode 
+ -name "My Server" 
+ -port 25629 
+ -world "Dedicated" 
+ -password "secret" 
+ -public ${PUBLIC} > >(sed 
+  -uE "[hidden]") & trap "[hidden]" 15;
+ wait $!
+
+
+
+ o
+7ff9344aa000-7ff9344ab000 rw-p 00000000 00:00 0 
+7ffe57792000-7ffe5779a000 ---p 00000000 00:00 0 
+7ffe57f70000-7ffe57f91000 rw-p 00000000 00:00 0                          [stack]
+7ffe57fa2000-7ffe57fa6000 r--p 00000000 00:00 0                          [vvar]
+7ffe57fa6000-7ffe57fa8000 r-xp 00000000 00:00 0                          [vdso]
+Native stacktrace:
+/entrypoint.sh: line 36:    39 Segmentation fault      (core dumped) ./valheim_server.x86_64 -nographics -batchmode -name "${SERVER_NAME}" -port ${SERVER_PORT} -world "${WORLD}" -password "${PASSWORD}" -public ${PUBLIC} > >(sed -uE "${FILTER}")
+container@pterodactyl~ Server marked as offline...
+[Pterodactyl Daemon]: ---------- Detected server process in a crashed state! ----------
+[Pterodactyl Daemon]: Exit code: 139
+[Pterodactyl Daemon]: Out of memory: false
+[Pterodactyl Daemon]: Updating process configuration files...
+[Pterodactyl Daemon]: Ensuring file permissions are set correctly, this could take a few seconds...
+container@pterodactyl~ Server marked as starting...
+[Pterodactyl Daemon]: Pulling Docker container image, this could take a few minutes to complete...
+[Pterodactyl Daemon]: Finished pulling Docker container image
 
   console.log("pp3")
 const addEmployees = async () => {
@@ -263,3 +361,20 @@ const addEmployees = async () => {
     }])
   }
   console.log("pp2")
+
+
+
+
+  {
+    type: "list",
+    name: "managerName",
+    message: ["Who will be the manager of this role "],
+    choices: async function (answers) {
+      const results = await queryPromise(
+        "select id.first_name AS name, id.role_id AS value from id WHERE role_id LIKE 3",
+        `%${answers.first_name}%`
+      );
+      console.log("pp2")
+      return results;
+    }
+  }

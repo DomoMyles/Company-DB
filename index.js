@@ -124,18 +124,21 @@ const addRoles = async () => {
       message: ["What department is this role under? "],
       choices: async function (answers) {
         const results = await queryPromise(
-          "select department.name AS name, department.id AS value from department",
+          "select department.name value from department",
           `%${answers.role}%`
         )
         console.log("pp2")
+        console.log(answers)
         return results;
+
       }
     }])
-    .then(function (department) {
-      var values = [rolename, roleSalary, deptName];
-      console.log(values)
-      server.query(`INSERT INTO rolee (title, salary, department_id) VALUES ('${rol.rolename}', '${roleSal.roleSalari}', '${department.deptName}')`, function (err, result) {
+    /////////send it to the mysql database
+    .then(function (Answers) {
+      console.log(Answers)
+      server.query(`INSERT INTO rolee (title, salary, department) VALUES ('${Answers.rolename}', '${Answers.roleSalary}', '${Answers.deptName}')`, function (err, result) {
         if (err) throw err;
+        console.log("Added role")
         log()
       })
     })
@@ -143,15 +146,7 @@ const addRoles = async () => {
 
 
 
-
-
-
-
-
-//DO SHIT
-
-//ASK THE USERS STUFFS
-console.log("pp3")
+///add exmployeees
 const addEmployees = async () => {
   const response = await inquirer.prompt([{
       type: "input",
@@ -159,50 +154,92 @@ const addEmployees = async () => {
       message: ["What is the employee's first name? "]
     }, {
       type: "input",
-      name: "Middle",
-      message: ["What is the employee's middle name? "]
-    }, {
-      type: "input",
       name: "lastName",
       message: ["What is the employee's Last name? "]
-    },
-
-    ////////get data n set as options
-    {
-      name: "role",
+    }, {
       type: "list",
+      name: "role",
       message: ["What is the employee's role? "],
+
       choices: async function (answers) {
         const results = await queryPromise(
-          "select rolee.title AS name, rolee.id AS value from rolee"
-        );
-        console.log("pp2")
+          "select rolee.title AS name from rolee",
+          `%${answers.role}%`
+        )
         return results;
       }
-    },
-    {
+    }, {
       type: "list",
       name: "manger",
       message: ["Who is the manager of this employee? "],
       choices: async function (answers) {
         const results = await queryPromise(
-          "select department.name AS name, department.id AS value from department WHERE name LIKE ?",
-          `%${answers}%`
+          "select id.first_name AS value, id.first_name AS name from id WHERE role_id LIKE role_id",
+          `%${answers.role}%`
         );
         return results;
       }
-    }
-  ])
-}
-console.log("pp2")
+    }])
+    .then(function (Answers) {
+      server.query(`INSERT INTO id (first_name, last_name, role_id, manager_id) VALUES ('${Answers.firstName}', '${Answers.lastName}', '${Answers.role}', '${Answers.manger}')`, function (err, result) {
+        if (err) throw err;
+        console.log("Added role")
+        log()
+      })
+    })
+};
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const update = async () => {
+  const response = await inquirer.prompt([{
+    type: "list",
+    name: "Employe",
+    message: ["Which employe's role do you want to update? "],
+    choices: async function (Employe) {
+      const results = await queryPromise(
+        "select id.first_name AS name from id"
+      )
+      console.log(Employe)
+      return results;
+    }}, {
+      type: "list",
+      name: "role",
+      message: ["What role do you want to assign the selected employee? "],
+
+      choices: async function (answers) {
+        const results = await queryPromise(
+          "select rolee.title AS name from rolee",
+          `%${answers.role}%`
+        )
+        console.log("Updated Employee's role")
+        return results;
+      }
+    }])
+    log()
+  }
+
+
+
+//cyst.nat
 
 //add employees
-
-
-
-
-
 
 //set up replace function
 function pingas() {

@@ -24,17 +24,3 @@ CREATE TABLE id (
     role_id INT,
     manager_id INT 
 );
-
- {
-      type: "list",
-      name: "managerName",
-      message: ["Who will be the manager of this role "],
-      choices: async function (answers) {
-        const results = await queryPromise(
-          "select id.first_name AS name, id.role_id AS value from id WHERE role_id LIKE 3",
-          `%${answers.first_name}%`
-        );
-        console.log("pp2")
-        return results;
-      }
-    }
