@@ -68,6 +68,8 @@ function log() {
 
 
 
+
+//set the db and Query Promises for the following funcitons
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -101,6 +103,7 @@ function addDepts() {
     .then(function (depd) {
       server.query(`INSERT INTO department (name) VALUES ('${depd.deptname}')`, function (err) {
         if (err) throw err
+        console.log("Added to departments")
         log()
       })
     })
@@ -127,18 +130,14 @@ const addRoles = async () => {
           "select department.name value from department",
           `%${answers.role}%`
         )
-        console.log("pp2")
-        console.log(answers)
         return results;
-
       }
     }])
     /////////send it to the mysql database
     .then(function (Answers) {
-      console.log(Answers)
       server.query(`INSERT INTO rolee (title, salary, department) VALUES ('${Answers.rolename}', '${Answers.roleSalary}', '${Answers.deptName}')`, function (err, result) {
         if (err) throw err;
-        console.log("Added role")
+        console.log("---Added role---")
         log()
       })
     })
@@ -174,9 +173,10 @@ const addEmployees = async () => {
       message: ["Who is the manager of this employee? "],
       choices: async function (answers) {
         const results = await queryPromise(
-          "select id.first_name AS value, id.first_name AS name from id WHERE role_id LIKE role_id",
-          `%${answers.role}%`
+          "select id.first_name AS value, id.first_name AS name from id WHERE role_id REGEXP 'manager'",
+          `%${answers.manager}%`
         );
+        console.log(answers)
         return results;
       }
     }])
@@ -205,8 +205,6 @@ const addEmployees = async () => {
 
 
 
-
-
 const update = async () => {
   const response = await inquirer.prompt([{
     type: "list",
@@ -218,22 +216,23 @@ const update = async () => {
       )
       console.log(Employe)
       return results;
-    }}, {
-      type: "list",
-      name: "role",
-      message: ["What role do you want to assign the selected employee? "],
+    }
+  }, {
+    type: "list",
+    name: "role",
+    message: ["What role do you want to assign the selected employee? "],
 
-      choices: async function (answers) {
-        const results = await queryPromise(
-          "select rolee.title AS name from rolee",
-          `%${answers.role}%`
-        )
-        console.log("Updated Employee's role")
-        return results;
-      }
-    }])
-    log()
-  }
+    choices: async function (answers) {
+      const results = await queryPromise(
+        "select rolee.title AS name from rolee",
+        `%${answers.role}%`
+      )
+      console.log("Updated Employee's role")
+      return results;
+    }
+  }])
+  log()
+}
 
 
 
