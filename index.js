@@ -65,6 +65,32 @@ function log() {
     })
 }
 
+
+
+
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "School1442!",
+    port: 3306,
+    database: "company_db"
+  },
+  console.log(`Connected to the movies_db database.`)
+);
+
+const queryPromise = (statement, params) => {
+  return new Promise((resolve, reject) => {
+    db.query(statement, params, (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+
+      return resolve(result);
+    });
+  });
+}
+
+
 //ADD DEPARTMENTS
 function addDepts() {
   inquirer.prompt([{
@@ -80,36 +106,38 @@ function addDepts() {
     })
 }
 
+
+
 //ADD ROLE
-function addRoles() {
-  inquirer.prompt([{
+const addRoles = async () => {
+  const response = await inquirer.prompt([{
       type: "input",
       name: "rolename",
       message: ["What is the name of the role? "]
+    }, {
+      type: "input",
+      name: "roleSalary",
+      message: ["What is the Salary of the role? "]
+    }, {
+      type: "list",
+      name: "deptName",
+      message: ["What department is this role under? "],
+      choices: async function (answers) {
+        const results = await queryPromise(
+          "select department.name AS name, department.id AS value from department",
+          `%${answers.role}%`
+        )
+        console.log("pp2")
+        return results;
+      }
     }])
-    .then(function (rol) {
-      inquirer.prompt([{
-          type: "input",
-          name: "roleSalari",
-          message: ["What is the Salary of the role? "]
-        }])
-        .then(function (roleSal) {
-          inquirer.prompt([{
-              type: "list",
-              name: "deptName",
-              message: ["What department is this role under? "],
-              choices: ["1", "2", "3", "4"]
-            }])
-            .then(function (department) {
-              var values = [rol.rolename, roleSal.roleSalari, department.deptName];
-              console.log(values)
-              server.query(`INSERT INTO rolee (title, salary, department_id) VALUES ('${rol.rolename}', '${roleSal.roleSalari}', '${department.deptName}')`, function (err, result) {
-                if (err) throw err;
-                console.log("woo!")
-                log()
-              })
-            })
-        })
+    .then(function (department) {
+      var values = [rolename, roleSalary, deptName];
+      console.log(values)
+      server.query(`INSERT INTO rolee (title, salary, department_id) VALUES ('${rol.rolename}', '${roleSal.roleSalari}', '${department.deptName}')`, function (err, result) {
+        if (err) throw err;
+        log()
+      })
     })
 }
 
@@ -119,33 +147,13 @@ function addRoles() {
 
 
 
-  const db = mysql.createConnection({
-      host: "localhost",
-      user: "root",
-      password: "School1442!",
-      port: 3306,
-      database: "company_db"
-    },
-    console.log(`Connected to the movies_db database.`)
-  );
 
-  const queryPromise = (statement, params) => {
-    return new Promise((resolve, reject) => {
-      db.query(statement, params, (err, result) => {
-        if (err) {
-          return reject(err);
-        }
-
-        return resolve(result);
-      });
-    });
-  }
 //DO SHIT
 
 //ASK THE USERS STUFFS
 console.log("pp3")
 const addEmployees = async () => {
-    const response = await inquirer.prompt([{
+  const response = await inquirer.prompt([{
       type: "input",
       name: "firstName",
       message: ["What is the employee's first name? "]
@@ -157,32 +165,36 @@ const addEmployees = async () => {
       type: "input",
       name: "lastName",
       message: ["What is the employee's Last name? "]
-    }, {
+    },
+
+    ////////get data n set as options
+    {
       name: "role",
       type: "list",
       message: ["What is the employee's role? "],
       choices: async function (answers) {
         const results = await queryPromise(
-          "select department.name AS name, department.id AS value from department WHERE name LIKE ?",
-          `%${answers.firstName}%`
+          "select rolee.title AS name, rolee.id AS value from rolee"
         );
         console.log("pp2")
         return results;
       }
-    }, {
+    },
+    {
       type: "list",
       name: "manger",
       message: ["Who is the manager of this employee? "],
       choices: async function (answers) {
         const results = await queryPromise(
           "select department.name AS name, department.id AS value from department WHERE name LIKE ?",
-          `%${answers.first_name}%`
+          `%${answers}%`
         );
         return results;
       }
-    }])
-  }
-  console.log("pp2")
+    }
+  ])
+}
+console.log("pp2")
 
 
 //add employees
@@ -223,15 +235,7 @@ function pingas() {
       console.log("here")
       console.log(counter0, counter1, counter2);
       console.log(obj)
-      obej = obj
-
-
-      // var opt = results[i]
-      // console.log(opt)
-      // const opet = opt[i]
-      // console.log(opet)
-
-
+      obej = objy
       if (err) throw err
     })
     .then
@@ -259,49 +263,8 @@ function pingas() {
 
 
 
-// //ADD ROLE FOR DEPARTMENT
-// function addRoles() {
-//   inquirer.prompt([{
-//     type: "input",
-//     name: "rolename",
-//     message: ["What is the name of the role? "]
-//   }]
-//   )
-//     .then(function (role, name) {
-//         inquirer.prompt([{
-//           type: "input",
-//           name: "roleSalary",
-//           message: ["What is the Salary of the role? "]
-//         }])
 
-
-//           //DO THE SALARY ONE
-//           .then(function (roleSalary, role) {
-//             const salary = roleSalary.salary
-//             server.query(`INSERT INTO 
-//             role
-//                 (title, salary) 
-//             VALUES 
-//             ('${role.rolename}', '${roleSalary.salary}')`, function (err) {
-//               if (err) throw err
-//               log()
-//             })
-//           })
-//       })
-//     }
-
-// function selectRole() {
-//   inquirer.prompt([{
-//     type: "list",
-//     name: "role",
-//     message: 'Select role',
-//     choices: ['This', 'That', 'One', 'Two']
-//   }])
-//     .then(function selectedRole(list) {
-//       server.query(`SELECT ${list.role}`)
-//       log()
-//     })
-// };
+/////DISPLAY EVERYTHING
 
 function displayDepts() {
   server.query('SELECT * FROM company_db.department', function (err, results) {

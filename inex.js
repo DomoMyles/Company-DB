@@ -205,3 +205,61 @@ const promptUser = async () => {
     console.log(results)
     console.log("pp")
   }
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  console.log("pp3")
+const addEmployees = async () => {
+    const response = await inquirer.prompt([{
+      type: "input",
+      name: "firstName",
+      message: ["What is the employee's first name? "]
+    }, {
+      type: "input",
+      name: "Middle",
+      message: ["What is the employee's middle name? "]
+    }, {
+      type: "input",
+      name: "lastName",
+      message: ["What is the employee's Last name? "]
+    },
+    
+    ////////get data n set as options
+    {
+      name: "role",
+      type: "list",
+      message: ["What is the employee's role? "],
+      choices: async function (answers) {
+        const results = await queryPromise(
+          "select rolee.title AS name, rolee.id AS value from rolee"
+        );
+        console.log("pp2")
+        return results;
+      }
+    },
+    {
+      type: "list",
+      name: "manger",
+      message: ["Who is the manager of this employee? "],
+      choices: async function (answers) {
+        const results = await queryPromise(
+          "select department.name AS name, department.id
+           AS value from department WHERE name LIKE ?",
+          `%${answers}%`
+        );
+        return results;
+      }
+    }])
+  }
+  console.log("pp2")
