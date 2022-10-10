@@ -127,15 +127,15 @@ const addRoles = async () => {
       message: ["What department is this role under? "],
       choices: async function (answers) {
         const results = await queryPromise(
-          "select department.name value from department",
-          `%${answers.role}%`
+          "select department.name AS name, department.id as value from department",
         )
+        console.log(results, answers)
         return results;
       }
     }])
     /////////send it to the mysql database
     .then(function (Answers) {
-      server.query(`INSERT INTO rolee (title, salary, department) VALUES ('${Answers.rolename}', '${Answers.roleSalary}', '${Answers.deptName}')`, function (err, result) {
+      server.query(`INSERT INTO role (title, salary, department_id) VALUES ('${Answers.rolename}', '${Answers.roleSalary}', '${Answers.deptName}')`, function (err, result) {
         if (err) throw err;
         console.log("---Added role---")
         log()
@@ -162,8 +162,7 @@ const addEmployees = async () => {
 
       choices: async function (answers) {
         const results = await queryPromise(
-          "select rolee.title AS name from rolee",
-          `%${answers.role}%`
+          "select role.title AS name, role.id AS value from role",
         )
         return results;
       }
@@ -173,7 +172,7 @@ const addEmployees = async () => {
       message: ["Who is the manager of this employee? "],
       choices: async function (answers) {
         const results = await queryPromise(
-          "select id.first_name AS value, id.first_name AS name from id WHERE role_id REGEXP 'manager'",
+          "select employeedb.first_name AS name, employeedb.id AS value from employeedb",
           `%${answers.manager}%`
         );
         console.log(answers)
@@ -181,7 +180,7 @@ const addEmployees = async () => {
       }
     }])
     .then(function (Answers) {
-      server.query(`INSERT INTO id (first_name, last_name, role_id, manager_id) VALUES ('${Answers.firstName}', '${Answers.lastName}', '${Answers.role}', '${Answers.manger}')`, function (err, result) {
+      server.query(`INSERT INTO employeedb (first_name, last_name, role_id, manager_id) VALUES ('${Answers.firstName}', '${Answers.lastName}', '${Answers.role}', '${Answers.manger}')`, function (err, result) {
         if (err) throw err;
         console.log("Added role")
         log()
@@ -207,95 +206,42 @@ const addEmployees = async () => {
 
 const update = async () => {
   const response = await inquirer.prompt([{
-    type: "list",
-    name: "Employe",
-    message: ["Which employe's role do you want to update? "],
-    choices: async function (Employe) {
-      const results = await queryPromise(
-        "select id.first_name AS name from id"
-      )
-      console.log(Employe)
-      return results;
-    }
-  }, {
-    type: "list",
-    name: "role",
-    message: ["What role do you want to assign the selected employee? "],
+      type: "list",
+      name: "Employe",
+      message: ["Which employe's role do you want to update? "],
+      choices: async function (Answers) {
+        const results = await queryPromise(
+          "select employeedb.first_name AS name, employeedb.id AS value from employeedb"
+        )
+        return results;
+      }
+    }, {
+      type: "list",
+      name: "role",
+      message: ["What role do you want to assign the selected employee? "],
 
-    choices: async function (answers) {
-      const results = await queryPromise(
-        "select rolee.title AS name from rolee",
-        `%${answers.role}%`
-      )
-      console.log("Updated Employee's role")
-      return results;
-    }
-  }])
-  log()
+      choices: async function (Answers) {
+        const results = await queryPromise(
+          "select role.title AS name, role.id AS value from role",
+        )
+        return results;
+        console.log(results)
+      }
+    }])
+    .then(function (Answers) {
+      console.log(Answers)
+      server.query(`UPDATE employeedb SET role_id = '${Answers.role}' WHERE id = ${Answers.Employe};`, function (err, result) {
+        if (err) throw err;
+
+        console.log("Updated Role")
+        log()
+      })
+    })
 }
 
 
 
 //cyst.nat
-
-//add employees
-
-//set up replace function
-function pingas() {
-  var obej = "four"
-  //grab stuff from mysql
-  const result = ""
-  const choi = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "School1442!",
-    port: 3306,
-    database: "company_db"
-  })
-  //set variables from the name column in department db to a sting named results
-  console.log("connected to sql")
-  var results = []
-  choi.query('SELECT name FROM department', function (err, results) {
-      console.log(results)
-      //set a variable to be set to each output from that table
-      let obj = {}
-
-      for (let i = 0; i < results.length; i++) {
-        obj["counter" + i] = results[i]
-      }
-      let {
-        counter0,
-        counter1,
-        counter2
-      } = obj;
-      console.log("here")
-      console.log(counter0, counter1, counter2);
-      console.log(obj)
-      obej = objy
-      if (err) throw err
-    })
-    .then
-
-  inquirer.prompt([{
-
-      type: "list",
-      name: "employe",
-      message: ["What is the employee you want to switch roles of? "],
-      choices: ["employee"]
-    }])
-    .then(function (employ) {
-      inquirer.prompt([{
-          type: "list",
-          name: "role",
-          message: ["What role would you like them to be? "],
-          choices: obej
-        }])
-        .then(function (rolee) {
-          console.log(rolee)
-        })
-    })
-
-}
 
 
 
@@ -304,25 +250,59 @@ function pingas() {
 
 function displayDepts() {
   server.query('SELECT * FROM company_db.department', function (err, results) {
-
     if (err) throw err
     console.table(results)
     log()
   })
 }
 
-function displayRole() {
-  server.query('SELECT * FROM company_db.rolee', function (err, results) {
 
+// async function (Answers) {
+//   const results = await queryPromise(
+//     "select role.title AS name, role.id AS value from role",
+//   )
+//   return results;
+//   console.log(results)
+// }
+// }])
+// .then(function (Answers) {
+// console.log(Answers)
+// server.query(`UPDATE employeedb SET role_id = '${Answers.role}' WHERE id = ${Answers.Employe};`, function (err, result) {
+//   if (err) throw err;
+/////////////////////////////////////////////
+// {
+//  async function (Answers) {
+//     const results = await queryPromise(
+//       "select role.title AS name, role.id AS value from role",
+//     )
+//     return results;
+//     console.log(results)
+//   }
+// }
+
+//make a for loop???
+
+async function displayRole(Go) {
+  const varid = await queryPromise(
+    'SELECT role.department_id as id FROM role',
+  )
+  console.table(varid)
+
+
+  const varname = await queryPromise(
+    `SELECT department.name as department WHERE department.id = '${varid.}' FROM department`
+  )
     if (err) throw err
-    console.table('Several objects', results);
-    log()
-  })
+    console.table(results);
+     console.log(varname);
+      log()
+  
+
 }
 
 function displayEmployees() {
-  server.query('SELECT * FROM company_db.id', function (err, results) {
-
+  queryPromise("SELECT * FROM company_db.employeedb", function (err, results) {
+    //"select role.title AS name, role.id AS value from role"
     if (err) throw err
     console.table('Several objects', results)
     log()
