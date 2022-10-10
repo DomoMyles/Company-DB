@@ -59,7 +59,7 @@ function log() {
         update()
 
       } else if (res.command === 'Quit') {
-        display()
+        quit()
 
       }
     })
@@ -282,4 +282,12 @@ async function displayEmployees() {
 `)
   console.table(employeTable)
   log()
+}
+
+function quit() {
+  server.destroy();
+  console.log('---Server Disonnected--- press ctrl + c to end') 
+
+  
+  // add the function that starts that communicates with mysql
 }
