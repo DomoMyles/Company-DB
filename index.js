@@ -255,39 +255,6 @@ function displayDepts() {
     log()
   })
 }
-
-
-// async function (Answers) {
-//   const results = await queryPromise(
-//     "select role.title AS name, role.id AS value from role",
-//   )
-//   return results;
-//   console.log(results)
-// }
-// }])
-// .then(function (Answers) {
-// console.log(Answers)
-// server.query(`UPDATE employeedb SET role_id = '${Answers.role}' WHERE id = ${Answers.Employe};`, function (err, result) {
-//   if (err) throw err;
-/////////////////////////////////////////////
-// {
-//  async function (Answers) {
-//     const results = await queryPromise(
-//       "select role.title AS name, role.id AS value from role",
-//     )
-//     return results;
-//     console.log(results)
-//   }
-// }
-
-// `SELECT * FROM(    SELECT department_id  FROM role ) a JOIN
-// (SELECT name 
-// FROM company_db.department
-// WHERE id='department_id' 
-//     AND name='department') b ON a.department_id = b.name`,
-
-//make a for loop???
-
 async function displayRole() {
   const varid = await queryPromise(`SELECT role.id, role.title, department.name AS department, role.salary
                     FROM department
@@ -301,61 +268,15 @@ async function displayEmployees() {
                                                   e.first_name,
                                                   e.last_name,
                                                   role.title,
-                                                  CONCAT(m.last_name, ', ', m.first_name) AS 'Manager',
+                                                  role.salary,
+                                                  CONCAT(m.first_name, ' ', m.last_name) AS 'Manager',
                                                   e.first_name AS 'first_name'
                                                   FROM  employeedb e
                                                     INNER JOIN role
                                                       ON role.id = e.role_id
-                                                    CROSS JOIN employeedb m
+                                                    INNER JOIN employeedb m
                                                       ON m.id = e.manager_id
-
-  `) 
-
-//   INSERT INTO order_item(order_id, product_name)
-// VALUES ((SELECT order_id,product_name FROM order
-//          INNER JOIN order_temp ON order.sap_number = order_temp.sap_number);
-//   const employeTable2 = await queryPromise(`SELECT 
-//                                  employeedb.id,
-//                                  employeedb.first_name AS 'first_name',
-//                                  employeedb.last_name,
-//                                  role.title
-//                                  FROM role
-//                                  INNER JOIN employeedb
-//                                  ON role.id=employeedb.role_id
-// SELECT 
-//                                                                 CONCAT(m.last_name, ', ', m.first_name) AS 'Manager',
-//                                                                    e.first_name AS 'first_name'
-//                                                                  FROM
-//                                                                    employeedb e
-//                                                                  INNER JOIN employeedb m 
-//                                                                  ON  m.id = e.manager_id
-
-//   `)
-
+`) 
   console.table(employeTable)
   log()
 }
-
-
-                                              //     employeedb.id,
-                                              //     employeedb.first_name,
-                                              //     employeedb.last_name,
-
-
-                                              // CASE
-                                              //     WHEN manager_id = employeedb.id THEN first_name
-                                              //     END AS Manager
-                                              //     FROM employeedb
-// role.title,
-// FROM role
-// INNER JOIN employeedb
-// ON role.id=employeedb.role_id
-
-// A.manager_id AS trymem8,
-// B.id AS tyemem9,
-// FROM employeedb A, employeedb B
-// WHERE A.manager_id <> B.id
-// UNION              
-//       SELECT 
-//               employeedb.first_name AS try FROM employeedb
-//               WHERE id = manager_id
