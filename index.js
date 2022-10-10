@@ -297,44 +297,46 @@ async function displayRole() {
 }
 
 async function displayEmployees() {
-  const employeTable = await queryPromise(`SELECT 
-                                                  employeedb.id,
-                                                  employeedb.first_name AS 'first_name',
-                                                  employeedb.last_name,
-                                                  role.title
-                                                  FROM role
-                                                  INNER JOIN employeedb
-                                                  ON role.id=employeedb.role_id
-                                                
-                                                  
+  const employeTable = await queryPromise(`SELECT e.id,
+                                                  e.first_name,
+                                                  e.last_name,
+                                                  role.title,
+                                                  CONCAT(m.last_name, ', ', m.first_name) AS 'Manager',
+                                                  e.first_name AS 'first_name'
+                                                  FROM  employeedb e
+                                                    INNER JOIN role
+                                                      ON role.id = e.role_id
+                                                    CROSS JOIN employeedb m
+                                                      ON m.id = e.manager_id
 
-                                                  
+  `) 
 
+//   INSERT INTO order_item(order_id, product_name)
+// VALUES ((SELECT order_id,product_name FROM order
+//          INNER JOIN order_temp ON order.sap_number = order_temp.sap_number);
+//   const employeTable2 = await queryPromise(`SELECT 
+//                                  employeedb.id,
+//                                  employeedb.first_name AS 'first_name',
+//                                  employeedb.last_name,
+//                                  role.title
+//                                  FROM role
+//                                  INNER JOIN employeedb
+//                                  ON role.id=employeedb.role_id
+// SELECT 
+//                                                                 CONCAT(m.last_name, ', ', m.first_name) AS 'Manager',
+//                                                                    e.first_name AS 'first_name'
+//                                                                  FROM
+//                                                                    employeedb e
+//                                                                  INNER JOIN employeedb m 
+//                                                                  ON  m.id = e.manager_id
 
-                                                  
-                                            `)
+//   `)
+
   console.table(employeTable)
   log()
 }
 
 
-// role.id,
-// role.title,
-// employeedb.last_name
-
-
-// FROM role
-// INNER JOIN employeedb
-// ON role.id=employeedb.role_id
-// union all
-// SELECT
-// e.id,
-// e.first_name AS 'first_name',
-// CONCAT(m.last_name, ', ', m.first_name) AS Manager
-// FROM
-// employeedb e
-// INNER JOIN employeedb m ON 
-// m.id = e.manager_id
                                               //     employeedb.id,
                                               //     employeedb.first_name,
                                               //     employeedb.last_name,
