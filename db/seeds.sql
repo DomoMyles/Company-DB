@@ -1,3 +1,3 @@
 INSERT INTO department (name) VALUES ('HR')
-INSERT INTO rolee (name) VALUES ('HR')
-INSERT INTO employee (name) VALUES ('HR')
+INSERT INTO role (name) VALUES ('HR')
+INSERT INTO employeedb (name) VALUES ('HR')

@@ -280,31 +280,80 @@ function displayDepts() {
 //   }
 // }
 
+// `SELECT * FROM(    SELECT department_id  FROM role ) a JOIN
+// (SELECT name 
+// FROM company_db.department
+// WHERE id='department_id' 
+//     AND name='department') b ON a.department_id = b.name`,
+
 //make a for loop???
 
-async function displayRole(Go) {
-  const varid = await queryPromise(
-    'SELECT role.department_id as id FROM role',
-  )
+async function displayRole() {
+  const varid = await queryPromise(`SELECT role.id, role.title, department.name AS department, role.salary
+                    FROM department
+                    INNER JOIN role ON department.id=role.department_id `)
   console.table(varid)
-
-
-  const varname = await queryPromise(
-    `SELECT department.name as department WHERE department.id = '${varid.}' FROM department`
-  )
-    if (err) throw err
-    console.table(results);
-     console.log(varname);
-      log()
-  
-
+  log()
 }
 
-function displayEmployees() {
-  queryPromise("SELECT * FROM company_db.employeedb", function (err, results) {
-    //"select role.title AS name, role.id AS value from role"
-    if (err) throw err
-    console.table('Several objects', results)
-    log()
-  })
+async function displayEmployees() {
+  const employeTable = await queryPromise(`SELECT 
+                                                  employeedb.id,
+                                                  employeedb.first_name AS 'first_name',
+                                                  employeedb.last_name,
+                                                  role.title
+                                                  FROM role
+                                                  INNER JOIN employeedb
+                                                  ON role.id=employeedb.role_id
+                                                
+                                                  
+
+                                                  
+
+
+                                                  
+                                            `)
+  console.table(employeTable)
+  log()
 }
+
+
+// role.id,
+// role.title,
+// employeedb.last_name
+
+
+// FROM role
+// INNER JOIN employeedb
+// ON role.id=employeedb.role_id
+// union all
+// SELECT
+// e.id,
+// e.first_name AS 'first_name',
+// CONCAT(m.last_name, ', ', m.first_name) AS Manager
+// FROM
+// employeedb e
+// INNER JOIN employeedb m ON 
+// m.id = e.manager_id
+                                              //     employeedb.id,
+                                              //     employeedb.first_name,
+                                              //     employeedb.last_name,
+
+
+                                              // CASE
+                                              //     WHEN manager_id = employeedb.id THEN first_name
+                                              //     END AS Manager
+                                              //     FROM employeedb
+// role.title,
+// FROM role
+// INNER JOIN employeedb
+// ON role.id=employeedb.role_id
+
+// A.manager_id AS trymem8,
+// B.id AS tyemem9,
+// FROM employeedb A, employeedb B
+// WHERE A.manager_id <> B.id
+// UNION              
+//       SELECT 
+//               employeedb.first_name AS try FROM employeedb
+//               WHERE id = manager_id
